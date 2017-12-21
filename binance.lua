@@ -33,10 +33,8 @@ WebBanking {
 
 local apiKey
 local apiSecret
-local currency
 local balances
-local prices
-local apiUrlVersion = "v1"
+local currency
 
 function SupportsBank (protocol, bankCode)
   return protocol == ProtocolWebBanking and bankCode == "Binance Account"
@@ -61,29 +59,33 @@ function ListAccounts (knownAccounts)
 end
 
 function RefreshAccount (account, since)
-  local s = {}
-  local balances = queryPrivate("account")["balances"]
-  local assets = ""
-  for key, value in pairs(balances) do
-    if value["free"] ~= "0.00000000" then
-      assets = assets .. value["asset"] .. ','
-    end
-  end
-  local eurPrice = queryCryptoCompare("pricemulti", "?fsyms=" .. assets .. "&tsyms=EUR")
+  balances = queryPrivate("account")["balances"]
+  local eurPrices = queryCryptoCompare("pricemulti", "?fsyms=" .. assetPrices() .. "&tsyms=EUR")
 
+  local s = {}
   for key, value in pairs(balances) do
-    if value["free"] ~= "0.00000000" then
+    if tonumber(value["free"]) > 0 then
       s[#s+1] = {
         name = value["asset"],
         market = market,
         currency = nil,
         quantity = value["free"],
-        price = eurPrice[value["asset"]]["EUR"],
+        price = eurPrices[value["asset"]]["EUR"],
       }
     end
   end
 
   return {securities = s}
+end
+
+function assetPrices()
+  local assets = ""
+  for key, value in pairs(balances) do
+    if tonumber(value["free"]) > 0 then
+      assets = assets .. value["asset"] .. ','
+    end
+  end
+  return assets
 end
 
 function EndSession ()
