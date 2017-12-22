@@ -3,6 +3,9 @@
 Fetches balances from Binance.com API and returns them as securities. 
 Prices in EUR from cryptocompare.com.
 
+Requirements:
+* MoneyMoney v2.3.4
+
 ## Extension Setup
 
 You can get a signed version of this extension from
