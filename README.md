@@ -1,3 +1,7 @@
+# You need MoneyMoney v2.3.4 or a current beta version for this extension
+
+---
+
 # moneymoney-binance
 
 Fetches balances from Binance.com API and returns them as securities. 
