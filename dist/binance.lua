@@ -25,7 +25,7 @@
 -- SOFTWARE.
 
 WebBanking {
-  version     = 1.0,
+  version     = 1.1,
   url         = "https://api.binance.com/api",
   description = "Fetch balances from Binance API and list them as securities",
   services    = { "Binance Account" },
@@ -35,6 +35,11 @@ local apiKey
 local apiSecret
 local balances
 local currency
+
+local currencySymbols = {
+  BCC = "BCH",
+  IOTA = "IOT"
+}
 
 function SupportsBank (protocol, bankCode)
   return protocol == ProtocolWebBanking and bankCode == "Binance Account"
@@ -70,7 +75,7 @@ function RefreshAccount (account, since)
         market = market,
         currency = nil,
         quantity = value["free"],
-        price = eurPrices[value["asset"]]["EUR"],
+        price = eurPrices[symbolForAsset(value["asset"])]["EUR"],
       }
     end
   end
@@ -78,11 +83,15 @@ function RefreshAccount (account, since)
   return {securities = s}
 end
 
+function symbolForAsset(asset)
+  return currencySymbols[asset] or asset
+end
+
 function assetPrices()
   local assets = ""
   for key, value in pairs(balances) do
     if tonumber(value["free"]) > 0 then
-      assets = assets .. value["asset"] .. ','
+      assets = assets .. symbolForAsset(value["asset"]) .. ','
     end
   end
   return assets
@@ -124,4 +133,4 @@ function queryCryptoCompare(method, query)
   return json:dictionary()
 end
 
--- SIGNATURE: MCwCFC8TsQtSRNnOuKdTYyiJATWs9F/6AhR1kphyaFcAFhBBy5CvW0PJF6JCxQ==
+-- SIGNATURE: MCwCFFPlEyxfzw2fxiU240wSJHRME7k7AhRf4QWm8QyjP4thFIBeFLpkgITHaw==
