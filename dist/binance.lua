@@ -37,8 +37,10 @@ local balances
 local currency
 
 local currencySymbols = {
-  BCC = "BCH",
-  IOTA = "IOT"
+  BCC  = "BCH",
+  IOTA = "IOT",
+  NANO = "XRB",
+  YOYO = "YOYOW"
 }
 
 function SupportsBank (protocol, bankCode)
@@ -66,6 +68,8 @@ end
 function RefreshAccount (account, since)
   balances = queryPrivate("account")["balances"]
   local eurPrices = queryCryptoCompare("pricemulti", "?fsyms=" .. assetPrices() .. "&tsyms=EUR")
+  local fallbackTable = {}
+  fallbackTable["EUR"] = 0
 
   local s = {}
   for key, value in pairs(balances) do
@@ -75,7 +79,7 @@ function RefreshAccount (account, since)
         market = market,
         currency = nil,
         quantity = value["free"],
-        price = eurPrices[symbolForAsset(value["asset"])]["EUR"],
+        price = (eurPrices[symbolForAsset(value["asset"])] or fallbackTable)["EUR"],
       }
     end
   end
@@ -133,4 +137,4 @@ function queryCryptoCompare(method, query)
   return json:dictionary()
 end
 
--- SIGNATURE: MCwCFFPlEyxfzw2fxiU240wSJHRME7k7AhRf4QWm8QyjP4thFIBeFLpkgITHaw==
+-- SIGNATURE: MCwCFAJ3fdgybuRae1cs38/Ep7ZBZn28AhQQdz1GuLm2Hhn3bazNVvX63nOfKw==
