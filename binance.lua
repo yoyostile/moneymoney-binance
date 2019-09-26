@@ -25,7 +25,7 @@
 -- SOFTWARE.
 
 WebBanking {
-  version     = 1.1,
+  version     = 1.2,
   url         = "https://api.binance.com/api",
   description = "Fetch balances from Binance API and list them as securities",
   services    = { "Binance Account" },
@@ -38,7 +38,7 @@ local currency
 
 local currencySymbols = {
   BCC  = "BCH",
-  IOTA = "IOT",
+  IOTA = "MIOTA",
   NANO = "XRB",
   YOYO = "YOYOW"
 }
