@@ -25,7 +25,7 @@
 -- SOFTWARE.
 
 WebBanking {
-  version     = 1.1,
+  version     = 1.2,
   url         = "https://api.binance.com/api",
   description = "Fetch balances from Binance API and list them as securities",
   services    = { "Binance Account" },
@@ -38,7 +38,7 @@ local currency
 
 local currencySymbols = {
   BCC  = "BCH",
-  IOTA = "IOT",
+  IOTA = "MIOTA",
   NANO = "XRB",
   YOYO = "YOYOW"
 }
@@ -137,4 +137,4 @@ function queryCryptoCompare(method, query)
   return json:dictionary()
 end
 
--- SIGNATURE: MCwCFAJ3fdgybuRae1cs38/Ep7ZBZn28AhQQdz1GuLm2Hhn3bazNVvX63nOfKw==
+-- SIGNATURE: MCwCFGlJea74WOG/0I+NSyeUShNRbbnkAhRyqfB+b4rdiNzBHSyVjh7wPsDy3w==
