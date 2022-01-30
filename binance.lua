@@ -67,6 +67,7 @@ end
 
 function RefreshAccount (account, since)
   balances = queryPrivate("account")["balances"]
+  merge_earnings()
   local eurPrices = queryCryptoCompare("pricemulti", "?fsyms=" .. assetPrices() .. "&tsyms=EUR")
   local fallbackTable = {}
   fallbackTable["EUR"] = 0
@@ -89,6 +90,21 @@ end
 
 function symbolForAsset(asset)
   return currencySymbols[asset] or asset
+end
+
+function merge_earnings()
+    for key, value in pairs(balances) do
+        if string.sub(key, 1, 2) == "LD" then
+            asset = string.sub(key, 3, string.len(key))
+            if balances[asset] ~= nil then
+                balances[asset]["free"] = tonumber(balances[asset]["free"]) + tonumber(value["free"])
+                balances[asset]["locked"] = tonumber(balances[asset]["locked"]) + tonumber(value["locked"])
+            else
+                balances[asset] = value
+            end
+            balances[key] = nil
+        end
+    end
 end
 
 function assetPrices()
