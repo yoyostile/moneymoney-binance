@@ -25,7 +25,7 @@
 -- SOFTWARE.
 
 WebBanking {
-  version     = 1.2,
+  version     = 1.3,
   url         = "https://api.binance.com/api",
   description = "Fetch balances from Binance API and list them as securities",
   services    = { "Binance Account" },
