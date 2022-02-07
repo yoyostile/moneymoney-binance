@@ -25,7 +25,7 @@
 -- SOFTWARE.
 
 WebBanking {
-  version     = 1.2,
+  version     = 1.3,
   url         = "https://api.binance.com/api",
   description = "Fetch balances from Binance API and list them as securities",
   services    = { "Binance Account" },
@@ -67,6 +67,7 @@ end
 
 function RefreshAccount (account, since)
   balances = queryPrivate("account")["balances"]
+  merge_earnings()
   local eurPrices = queryCryptoCompare("pricemulti", "?fsyms=" .. assetPrices() .. "&tsyms=EUR")
   local fallbackTable = {}
   fallbackTable["EUR"] = 0
@@ -89,6 +90,21 @@ end
 
 function symbolForAsset(asset)
   return currencySymbols[asset] or asset
+end
+
+function merge_earnings()
+    for key, value in pairs(balances) do
+        if string.sub(key, 1, 2) == "LD" then
+            asset = string.sub(key, 3, string.len(key))
+            if balances[asset] ~= nil then
+                balances[asset]["free"] = tonumber(balances[asset]["free"]) + tonumber(value["free"])
+                balances[asset]["locked"] = tonumber(balances[asset]["locked"]) + tonumber(value["locked"])
+            else
+                balances[asset] = value
+            end
+            balances[key] = nil
+        end
+    end
 end
 
 function assetPrices()
@@ -136,5 +152,3 @@ function queryCryptoCompare(method, query)
 
   return json:dictionary()
 end
-
--- SIGNATURE: MCwCFGlJea74WOG/0I+NSyeUShNRbbnkAhRyqfB+b4rdiNzBHSyVjh7wPsDy3w==
