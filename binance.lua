@@ -25,7 +25,7 @@
 -- SOFTWARE.
 
 WebBanking {
-  version     = 1.3,
+  version     = 1.3.1,
   url         = "https://api.binance.com/api",
   description = "Fetch balances from Binance API and list them as securities",
   services    = { "Binance Account" },
@@ -67,7 +67,7 @@ end
 
 function RefreshAccount (account, since)
   balances = queryPrivate("account")["balances"]
-  merge_earnings()
+  mergeEarnings()
   local eurPrices = queryCryptoCompare("pricemulti", "?fsyms=" .. assetPrices() .. "&tsyms=EUR")
   local fallbackTable = {}
   fallbackTable["EUR"] = 0
@@ -92,19 +92,22 @@ function symbolForAsset(asset)
   return currencySymbols[asset] or asset
 end
 
-function merge_earnings()
-    for key, value in pairs(balances) do
-        if string.sub(key, 1, 2) == "LD" then
-            asset = string.sub(key, 3, string.len(key))
-            if balances[asset] ~= nil then
-                balances[asset]["free"] = tonumber(balances[asset]["free"]) + tonumber(value["free"])
-                balances[asset]["locked"] = tonumber(balances[asset]["locked"]) + tonumber(value["locked"])
-            else
-                balances[asset] = value
-            end
-            balances[key] = nil
+function mergeEarnings()
+  for ldKey, ldValue in pairs(balances) do
+    if string.sub(ldValue["asset"], 1, 2) == "LD" then
+      asset = string.sub(ldValue["asset"], 3, string.len(ldValue["asset"]))
+      for assetKey, assetValue in pairs(balances) do
+        if assetValue["asset"] == asset then
+          balances[assetKey]["free"] = tonumber(assetValue["free"]) + tonumber(ldValue["free"])
+          balances[assetKey]["locked"] = tonumber(assetValue["locked"]) + tonumber(ldValue["locked"])
+          balances[ldKey] = nil
         end
+      end
+      if balances[ldKey] ~= nil then
+        ldValue["asset"] = asset
+      end
     end
+  end
 end
 
 function assetPrices()
